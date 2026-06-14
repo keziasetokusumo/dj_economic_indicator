@@ -1,0 +1,49 @@
+year,series,value,unit,group,source
+2014,emusic_revenue,6.9,USD_billions,culture,IMS Business Report
+2019,emusic_revenue,7.3,USD_billions,culture,IMS Business Report
+2020,emusic_revenue,3.4,USD_billions,culture,IMS Business Report
+2021,emusic_revenue,6.0,USD_billions,culture,IMS Business Report
+2023,emusic_revenue,11.8,USD_billions,culture,IMS Business Report
+2024,emusic_revenue,12.9,USD_billions,culture,IMS Business Report
+2025,emusic_revenue,15.1,USD_billions,culture,IMS Business Report
+2007,unemployment_rate,4.6,percent,economy,BLS/FRED UNRATE
+2008,unemployment_rate,5.8,percent,economy,BLS/FRED UNRATE
+2009,unemployment_rate,9.3,percent,economy,BLS/FRED UNRATE
+2010,unemployment_rate,9.6,percent,economy,BLS/FRED UNRATE
+2011,unemployment_rate,8.9,percent,economy,BLS/FRED UNRATE
+2012,unemployment_rate,8.1,percent,economy,BLS/FRED UNRATE
+2013,unemployment_rate,7.4,percent,economy,BLS/FRED UNRATE
+2014,unemployment_rate,6.2,percent,economy,BLS/FRED UNRATE
+2015,unemployment_rate,5.3,percent,economy,BLS/FRED UNRATE
+2016,unemployment_rate,4.9,percent,economy,BLS/FRED UNRATE
+2017,unemployment_rate,4.4,percent,economy,BLS/FRED UNRATE
+2018,unemployment_rate,3.9,percent,economy,BLS/FRED UNRATE
+2019,unemployment_rate,3.7,percent,economy,BLS/FRED UNRATE
+2020,unemployment_rate,8.1,percent,economy,BLS/FRED UNRATE
+2021,unemployment_rate,5.4,percent,economy,BLS/FRED UNRATE
+2022,unemployment_rate,3.6,percent,economy,BLS/FRED UNRATE
+2023,unemployment_rate,3.6,percent,economy,BLS/FRED UNRATE
+2024,unemployment_rate,4.0,percent,economy,BLS/FRED UNRATE
+2025,unemployment_rate,4.2,percent,economy,BLS/FRED UNRATE
+2007,real_gdp,16.5,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2008,real_gdp,16.5,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2009,real_gdp,16.1,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2010,real_gdp,16.5,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2011,real_gdp,16.8,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2012,real_gdp,17.1,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2013,real_gdp,17.5,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2014,real_gdp,17.9,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2015,real_gdp,18.4,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2016,real_gdp,18.7,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2017,real_gdp,19.1,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2018,real_gdp,19.7,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2019,real_gdp,20.2,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2020,real_gdp,19.7,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2021,real_gdp,21.1,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2022,real_gdp,21.4,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2023,real_gdp,22.0,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2024,real_gdp,22.7,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2025,real_gdp,23.3,USD_trillions_2017,economy,FRED GDPC1 (approx)
+2021,dj_employment_formal,4.77,thousands,culture,BLS OEWS 27-2091
+2022,dj_employment_formal,5.64,thousands,culture,BLS OEWS 27-2091
+2024,dj_employment_total,15.4,thousands,culture,BLS OOH (incl. self-employed)

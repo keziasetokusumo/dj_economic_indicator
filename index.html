@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Drop — DJs vs. the U.S. Economy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14121c; --panel:#1d1a28; --panel2:#252134; --line:#2e2a40;
+    --ink:#ece8f5; --muted:#8a84a0; --faint:#5b566f;
+    --culture:#ff5ca8; --culture-dim:#7a2f55;
+    --economy:#3fd0e0; --economy-dim:#1f5b63;
+    --recession:#ff5c5c;
+    --display:'Bricolage Grotesque', 'Trebuchet MS', system-ui, sans-serif;
+    --mono:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --body:system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased}
+  a{color:var(--economy)}
+  .wrap{max-width:1000px;margin:0 auto;padding:32px 20px 64px}
+
+  header{margin-bottom:22px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,6vw,60px);line-height:.98;margin:.18em 0 .12em;
+     background:linear-gradient(92deg,var(--culture),var(--economy));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .thesis{font-size:clamp(15px,2.2vw,18px);color:#cfc9e0;max-width:62ch;line-height:1.5;margin:.2em 0 0}
+  .vintage{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:10px}
+
+  .modebar{display:flex;gap:6px;margin:24px 0 14px}
+  .mode{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+        background:var(--panel);border:1px solid var(--line);padding:9px 16px;border-radius:999px;cursor:pointer;transition:.15s}
+  .mode:hover{color:var(--ink);border-color:var(--faint)}
+  .mode[aria-pressed="true"]{color:var(--bg);background:var(--ink);border-color:var(--ink);font-weight:700}
+
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 14px 10px;position:relative}
+  svg{display:block;width:100%;height:auto;overflow:visible}
+  .axislab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .gridline{stroke:var(--line);stroke-width:1}
+  .baseline{stroke:var(--faint);stroke-width:1;stroke-dasharray:3 4}
+  .recess{fill:var(--recession);opacity:.10}
+  .recess-lab{font-family:var(--mono);font-size:10px;fill:var(--recession);opacity:.8;letter-spacing:.05em}
+  .serieslab{font-family:var(--mono);font-size:11px;font-weight:700}
+  .dot{cursor:pointer}
+  .guide{stroke:var(--faint);stroke-width:1;stroke-dasharray:2 3}
+
+  /* mixer channel strip */
+  .console{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .chan{flex:1 1 150px;min-width:140px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+        padding:12px 12px 11px;cursor:pointer;transition:.15s;text-align:left;color:var(--ink);position:relative;overflow:hidden}
+  .chan:hover{border-color:var(--faint)}
+  .chan .top{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .chan .led{width:9px;height:9px;border-radius:50%;background:var(--faint);box-shadow:none;flex:none}
+  .chan .name{font-family:var(--mono);font-size:11px;letter-spacing:.03em;line-height:1.25}
+  .chan .val{font-family:var(--display);font-weight:700;font-size:21px;line-height:1}
+  .chan .unit{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px}
+  .chan .fader{margin-top:10px;height:4px;border-radius:2px;background:var(--panel2)}
+  .chan .fader span{display:block;height:100%;border-radius:2px;width:0;background:var(--faint);transition:.2s}
+  .chan[aria-pressed="true"]{background:var(--panel2)}
+  .chan[data-group="culture"][aria-pressed="true"]{border-color:var(--culture)}
+  .chan[data-group="economy"][aria-pressed="true"]{border-color:var(--economy)}
+  .chan[data-group="culture"][aria-pressed="true"] .led{background:var(--culture);box-shadow:0 0 9px var(--culture)}
+  .chan[data-group="economy"][aria-pressed="true"] .led{background:var(--economy);box-shadow:0 0 9px var(--economy)}
+  .chan[data-group="culture"][aria-pressed="true"] .fader span{background:var(--culture)}
+  .chan[data-group="economy"][aria-pressed="true"] .fader span{background:var(--economy)}
+
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:16px;
+            font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .controls label{display:flex;align-items:center;gap:8px}
+  select{font-family:var(--mono);font-size:12px;background:var(--panel2);color:var(--ink);
+         border:1px solid var(--line);border-radius:8px;padding:6px 9px}
+
+  .readout{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+           padding:15px 16px;font-size:14px;line-height:1.55;color:#cfc9e0}
+  .readout b{color:var(--ink)}
+  .rval{font-family:var(--display);font-weight:800;font-size:20px;color:var(--ink)}
+
+  .callout{margin-top:16px;display:flex;gap:14px;flex-wrap:wrap}
+  .card{flex:1 1 220px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--culture);
+        border-radius:10px;padding:13px 15px}
+  .card h3{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+  .card p{margin:0;font-size:13px;color:#cfc9e0;line-height:1.5}
+  .card .big{font-family:var(--display);font-weight:800;font-size:24px;color:var(--ink)}
+
+  /* floating tooltip */
+  #tip{position:fixed;pointer-events:none;z-index:10;background:#0e0c15;border:1px solid var(--line);
+       border-radius:8px;padding:9px 11px;font-family:var(--mono);font-size:11px;color:var(--ink);
+       opacity:0;transition:opacity .1s;min-width:120px;box-shadow:0 8px 28px rgba(0,0,0,.5)}
+  #tip .ty{color:var(--muted);margin-bottom:5px}
+  #tip .row{display:flex;justify-content:space-between;gap:14px}
+  #tip .row i{font-style:normal}
+
+  footer{margin-top:30px;font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.7}
+  footer .src{color:var(--muted)}
+  .hidden{display:none}
+  @media (max-width:560px){ .chan .val{font-size:18px} }
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">DJs &times; the U.S. economy &middot; 2007&ndash;2025</div>
+    <h1>The Drop</h1>
+    <p class="thesis">Electronic music boomed, crashed in the pandemic, then roared back. Toggle the channels to line that arc up against the economy &mdash; and use the correlation view to see whether the dancefloor actually moves with GDP, or to its own beat.</p>
+    <div class="vintage">Annual data. Lines are indexed to 100 at a base year so different units share one axis. Recessions shaded.</div>
+  </header>
+
+  <div class="modebar" role="tablist">
+    <button class="mode" id="mode-time" aria-pressed="true">Timeline</button>
+    <button class="mode" id="mode-corr" aria-pressed="false">Correlation</button>
+  </div>
+
+  <!-- TIMELINE VIEW -->
+  <section id="view-time">
+    <div class="stage"><svg id="chart" viewBox="0 0 920 470" role="img" aria-label="Indexed time series"></svg></div>
+
+    <div class="controls">
+      <label>Index to 100 at
+        <select id="baseyear"></select>
+      </label>
+      <span id="hint">Click a channel below to mix it in or out.</span>
+    </div>
+
+    <div class="console" id="console"></div>
+
+    <div class="callout">
+      <div class="card">
+        <h3>The DJ job, on the books</h3>
+        <p><span class="big">4,770 &rarr; 5,640</span><br>Formal (wage &amp; salary) DJ jobs, 2021&rarr;2022, per the BLS occupation code for &ldquo;Disc Jockeys, Except Radio.&rdquo;</p>
+      </div>
+      <div class="card">
+        <h3>The DJ job, for real</h3>
+        <p><span class="big">~15,400</span><br>Total DJs in 2024 once you count the self-employed &mdash; about 47% of them. The official wage count misses most of the booth.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORRELATION VIEW -->
+  <section id="view-corr" class="hidden">
+    <div class="stage"><svg id="scatter" viewBox="0 0 920 470" role="img" aria-label="Correlation scatter"></svg></div>
+    <div class="controls">
+      <label>Economy axis
+        <select id="xpick">
+          <option value="unemp">Unemployment rate</option>
+          <option value="gdp">Real GDP</option>
+        </select>
+      </label>
+      <label>vs. DJ axis
+        <select id="ypick">
+          <option value="emusic">Electronic music revenue</option>
+        </select>
+      </label>
+    </div>
+    <div class="readout" id="corr-readout"></div>
+  </section>
+
+  <footer>
+    <div class="src">Sources &mdash; Electronic music revenue: IMS Electronic Music Business Report (MIDiA Research). DJ employment: U.S. BLS Occupational Employment &amp; Wage Statistics (27-2091) and Occupational Outlook Handbook. Unemployment &amp; real GDP: U.S. BLS / FRED (UNRATE, GDPC1). Recession dates: NBER.</div>
+    <div style="margin-top:8px">Caveats &mdash; The DJ workforce is mostly self-employed, so formal counts undercount it. Industry-revenue figures are annual estimates and are occasionally restated between report editions; some years are gaps, not zeros. Real GDP values are approximate &mdash; refresh from FRED for exact vintages. Correlation over ~7 shared years is suggestive, not proof.</div>
+  </footer>
+</div>
+
+<div id="tip"></div>
+
+<script>
+//===================== DATA (real, sourced — see data.csv / footer) =====================
+const SERIES = {
+  emusic: { label:"Electronic music revenue", short:"E-music rev.", unit:"$B", group:"culture",
+            data:{2014:6.9,2019:7.3,2020:3.4,2021:6.0,2023:11.8,2024:12.9,2025:15.1} },
+  unemp:  { label:"Unemployment rate", short:"Unemployment", unit:"%", group:"economy",
+            data:{2007:4.6,2008:5.8,2009:9.3,2010:9.6,2011:8.9,2012:8.1,2013:7.4,2014:6.2,2015:5.3,2016:4.9,2017:4.4,2018:3.9,2019:3.7,2020:8.1,2021:5.4,2022:3.6,2023:3.6,2024:4.0,2025:4.2} },
+  gdp:    { label:"Real GDP", short:"Real GDP", unit:"$T", group:"economy",
+            data:{2007:16.5,2008:16.5,2009:16.1,2010:16.5,2011:16.8,2012:17.1,2013:17.5,2014:17.9,2015:18.4,2016:18.7,2017:19.1,2018:19.7,2019:20.2,2020:19.7,2021:21.1,2022:21.4,2023:22.0,2024:22.7,2025:23.3} }
+};
+const ORDER = ["emusic","unemp","gdp"];
+const RECESSIONS = [ {x0:2007.92,x1:2009.5,lab:"2008–09"}, {x0:2020.08,x1:2020.33,lab:"2020"} ];
+const COLOR = {culture:getCSS("--culture"), economy:getCSS("--economy")};
+function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+
+const X0=2007, X1=2025;            // x domain
+const M={l:52,r:20,t:24,b:42};     // chart margins
+const VW=920, VH=470;
+const PW=VW-M.l-M.r, PH=VH-M.t-M.b;
+
+const state = { active:{emusic:true,unemp:true,gdp:false}, base:2019 };
+
+//===================== helpers =====================
+const yearsOf = k => Object.keys(SERIES[k].data).map(Number).sort((a,b)=>a-b);
+const sx = y => M.l + (y - X0)/(X1 - X0) * PW;
+const fmt = (k,v) => SERIES[k].unit==="$B" ? "$"+v.toFixed(1)+"B"
+                  : SERIES[k].unit==="$T" ? "$"+v.toFixed(1)+"T"
+                  : v.toFixed(1)+"%";
+function el(tag,attrs){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+//===================== TIMELINE =====================
+const chart = document.getElementById("chart");
+function drawTimeline(){
+  chart.innerHTML="";
+  const activeKeys = ORDER.filter(k=>state.active[k] && SERIES[k].data[state.base]!=null);
+  // indexed points
+  const lines = activeKeys.map(k=>{
+    const base = SERIES[k].data[state.base];
+    const pts = yearsOf(k).map(y=>({y, raw:SERIES[k].data[y], idx:SERIES[k].data[y]/base*100}));
+    return {k, color:COLOR[SERIES[k].group], pts};
+  });
+  // y domain
+  let vals=[100]; lines.forEach(l=>l.pts.forEach(p=>vals.push(p.idx)));
+  let yMin=Math.min(...vals), yMax=Math.max(...vals);
+  const pad=(yMax-yMin)*0.12||10; yMin=Math.max(0,yMin-pad); yMax=yMax+pad;
+  const sy = v => M.t + (1-(v-yMin)/(yMax-yMin))*PH;
+
+  // recession bands
+  RECESSIONS.forEach(r=>{
+    const x0=Math.max(M.l,sx(r.x0)), x1=Math.min(M.l+PW,sx(r.x1));
+    chart.appendChild(el("rect",{class:"recess",x:x0,y:M.t,width:Math.max(2,x1-x0),height:PH}));
+    chart.append(text((x0+x1)/2, M.t+12, r.lab, "recess-lab", "middle"));
+  });
+  // y gridlines
+  const ticks=niceTicks(yMin,yMax,5);
+  ticks.forEach(t=>{
+    chart.appendChild(el("line",{class:t===100?"baseline":"gridline",x1:M.l,x2:M.l+PW,y1:sy(t),y2:sy(t)}));
+    chart.append(text(M.l-8, sy(t)+3, t===100?"100 (base)":String(Math.round(t)), "axislab", "end"));
+  });
+  // x labels
+  for(let y=X0;y<=X1;y+= ((X1-X0)>14?3:2)){
+    chart.append(text(sx(y), M.t+PH+22, "’"+String(y).slice(2), "axislab", "middle"));
+  }
+  // lines + dots
+  lines.forEach(l=>{
+    const d=l.pts.map((p,i)=>(i?"L":"M")+sx(p.y).toFixed(1)+" "+sy(p.idx).toFixed(1)).join(" ");
+    chart.appendChild(el("path",{d,fill:"none",stroke:l.color,"stroke-width":2.4,"stroke-linejoin":"round","stroke-linecap":"round","opacity":.95}));
+    l.pts.forEach(p=>chart.appendChild(el("circle",{class:"dot",cx:sx(p.y),cy:sy(p.idx),r:3.4,fill:l.color})));
+    // end label
+    const last=l.pts[l.pts.length-1];
+    chart.append(text(sx(last.y)+7, sy(last.idx)+3, SERIES[l.k].short, "serieslab", "start", l.color));
+  });
+  if(!lines.length) chart.append(text(M.l+PW/2,M.t+PH/2,"Mix in a channel to begin","axislab","middle"));
+
+  // hover layer
+  const hit=el("rect",{x:M.l,y:M.t,width:PW,height:PH,fill:"transparent"});
+  chart.appendChild(hit);
+  hit.addEventListener("mousemove",e=>hoverTimeline(e,lines,sy));
+  hit.addEventListener("mouseleave",hideTip);
+}
+function hoverTimeline(e,lines,sy){
+  const r=chart.getBoundingClientRect(), scale=VW/r.width;
+  const mxView=(e.clientX-r.left)*scale;
+  let yr=Math.round(X0+(mxView-M.l)/PW*(X1-X0)); yr=Math.max(X0,Math.min(X1,yr));
+  chart.querySelectorAll(".guide").forEach(n=>n.remove());
+  chart.appendChild(el("line",{class:"guide",x1:sx(yr),x2:sx(yr),y1:M.t,y2:M.t+PH}));
+  let rows=lines.map(l=>{const p=l.pts.find(p=>p.y===yr);return p?`<div class="row"><i style="color:${l.color}">${SERIES[l.k].short}</i><span>${fmt(l.k,p.raw)} · ${Math.round(p.idx)}</span></div>`:"";}).join("");
+  if(!rows) rows='<div class="row" style="color:var(--muted)">no data</div>';
+  showTip(e, `<div class="ty">${yr}</div>${rows}`);
+}
+
+//===================== CORRELATION =====================
+const scatter=document.getElementById("scatter");
+function drawCorr(){
+  scatter.innerHTML="";
+  const xk=document.getElementById("xpick").value, yk=document.getElementById("ypick").value;
+  const years=yearsOf(yk).filter(y=>SERIES[xk].data[y]!=null);
+  const P=years.map(y=>({y, x:SERIES[xk].data[y], v:SERIES[yk].data[y]}));
+  const xs=P.map(p=>p.x), ys=P.map(p=>p.v);
+  const xMin=Math.min(...xs), xMax=Math.max(...xs), yMin=Math.min(...ys), yMax=Math.max(...ys);
+  const px=v=>M.l+(v-xMin)/((xMax-xMin)||1)*PW;
+  const py=v=>M.t+(1-(v-yMin)/((yMax-yMin)||1))*PH;
+  const xpad=(xMax-xMin)*.08||1, ypad=(yMax-yMin)*.08||1;
+  const PX=v=>M.l+(v-(xMin-xpad))/((xMax-xMin+2*xpad))*PW;
+  const PY=v=>M.t+(1-(v-(yMin-ypad))/((yMax-yMin+2*ypad)))*PH;
+
+  // grid
+  niceTicks(yMin-ypad,yMax+ypad,5).forEach(t=>{
+    scatter.appendChild(el("line",{class:"gridline",x1:M.l,x2:M.l+PW,y1:PY(t),y2:PY(t)}));
+    scatter.append(text(M.l-8,PY(t)+3,fmt(yk,t),"axislab","end"));
+  });
+  niceTicks(xMin-xpad,xMax+xpad,5).forEach(t=>{
+    scatter.append(text(PX(t),M.t+PH+22,fmt(xk,t),"axislab","middle"));
+  });
+  // axis titles
+  scatter.append(text(M.l+PW/2,M.t+PH+38,SERIES[xk].label+" →","axislab","middle"));
+  // regression
+  const {m,b,r}=regress(xs,ys);
+  const lx0=xMin-xpad, lx1=xMax+xpad;
+  scatter.appendChild(el("line",{x1:PX(lx0),y1:PY(m*lx0+b),x2:PX(lx1),y2:PY(m*lx1+b),
+      stroke:getCSS("--faint"),"stroke-width":1.6,"stroke-dasharray":"5 4"}));
+  // points
+  P.forEach(p=>{
+    scatter.appendChild(el("circle",{cx:PX(p.x),cy:PY(p.v),r:5,fill:COLOR.culture,opacity:.9}));
+    scatter.append(text(PX(p.x)+8,PY(p.v)+3,"’"+String(p.y).slice(2),"axislab","start"));
+  });
+  // readout
+  const dir = r<-0.3?"move in opposite directions":r>0.3?"tend to rise and fall together":"show little linear relationship";
+  const strength = Math.abs(r)>0.7?"strong":Math.abs(r)>0.4?"moderate":"weak";
+  document.getElementById("corr-readout").innerHTML =
+    `Across <b>${P.length}</b> shared years, ${SERIES[yk].label.toLowerCase()} and ${SERIES[xk].label.toLowerCase()} `+
+    `<b>${dir}</b> — a ${strength} correlation of <span class="rval">r = ${r.toFixed(2)}</span>. `+
+    `${xk==="unemp" ? "Higher unemployment lining up with a smaller scene (and vice versa) is what a negative r means here." : "A positive r means the scene tends to be bigger when output is higher."} `+
+    `With only ${P.length} points, read this as a hint about the rhythm, not a verdict.`;
+}
+function regress(xs,ys){
+  const n=xs.length, mx=avg(xs), my=avg(ys);
+  let sxy=0,sxx=0,syy=0;
+  for(let i=0;i<n;i++){sxy+=(xs[i]-mx)*(ys[i]-my);sxx+=(xs[i]-mx)**2;syy+=(ys[i]-my)**2;}
+  const m=sxy/sxx, b=my-m*mx, r=sxy/Math.sqrt(sxx*syy);
+  return {m,b,r};
+}
+const avg=a=>a.reduce((s,x)=>s+x,0)/a.length;
+
+//===================== shared svg utils =====================
+function text(x,y,str,cls,anchor,fill){const t=el("text",{x,y,class:cls,"text-anchor":anchor||"start"});if(fill)t.setAttribute("fill",fill);t.textContent=str;return t;}
+function niceTicks(min,max,n){const span=max-min,step=niceNum(span/(n-1));const lo=Math.floor(min/step)*step,out=[];for(let v=lo;v<=max+1e-9;v+=step)if(v>=min-1e-9)out.push(Math.round(v*100)/100);return out;}
+function niceNum(x){const e=Math.floor(Math.log10(x)),f=x/10**e;const nf=f<1.5?1:f<3?2:f<7?5:10;return nf*10**e;}
+
+//===================== tooltip =====================
+const tip=document.getElementById("tip");
+function showTip(e,html){tip.innerHTML=html;tip.style.opacity=1;let x=e.clientX+14,y=e.clientY+14;if(x+150>innerWidth)x=e.clientX-160;tip.style.left=x+"px";tip.style.top=y+"px";}
+function hideTip(){tip.style.opacity=0;chart.querySelectorAll(".guide").forEach(n=>n.remove());}
+
+//===================== console (channel strips) =====================
+function buildConsole(){
+  const c=document.getElementById("console"); c.innerHTML="";
+  ORDER.forEach(k=>{
+    const s=SERIES[k], ys=yearsOf(k), last=ys[ys.length-1];
+    const btn=document.createElement("button");
+    btn.className="chan"; btn.dataset.group=s.group; btn.setAttribute("aria-pressed",state.active[k]);
+    btn.innerHTML=`<div class="top"><span class="led"></span><span class="name">${s.label}</span></div>`+
+                  `<div class="val">${fmt(k,s.data[last])}</div>`+
+                  `<div class="unit">${s.unit} · latest ’${String(last).slice(2)} · ${s.group}</div>`+
+                  `<div class="fader"><span></span></div>`;
+    btn.addEventListener("click",()=>{state.active[k]=!state.active[k];btn.setAttribute("aria-pressed",state.active[k]);setFader(btn,k);drawTimeline();});
+    c.appendChild(btn); setFader(btn,k);
+  });
+}
+function setFader(btn,k){btn.querySelector(".fader span").style.width=state.active[k]?"100%":"18%";}
+
+//===================== base-year select =====================
+function buildBaseYears(){
+  const sel=document.getElementById("baseyear");
+  // years where the indexable (long) series all have data: use emusic years ∩ presence
+  const opts=[2014,2019,2021,2023,2024];
+  sel.innerHTML=opts.map(y=>`<option value="${y}" ${y===state.base?"selected":""}>${y}</option>`).join("");
+  sel.addEventListener("change",()=>{state.base=+sel.value;drawTimeline();});
+}
+
+//===================== mode switching =====================
+const vTime=document.getElementById("view-time"), vCorr=document.getElementById("view-corr");
+const bTime=document.getElementById("mode-time"), bCorr=document.getElementById("mode-corr");
+bTime.onclick=()=>{setMode("time")}; bCorr.onclick=()=>{setMode("corr")};
+function setMode(m){
+  const t=m==="time";
+  bTime.setAttribute("aria-pressed",t); bCorr.setAttribute("aria-pressed",!t);
+  vTime.classList.toggle("hidden",!t); vCorr.classList.toggle("hidden",t);
+  if(t) drawTimeline(); else drawCorr();
+}
+document.getElementById("xpick").addEventListener("change",drawCorr);
+document.getElementById("ypick").addEventListener("change",drawCorr);
+
+//===================== init =====================
+buildConsole(); buildBaseYears(); drawTimeline();
+addEventListener("resize",()=>{ if(!vTime.classList.contains("hidden")) drawTimeline(); else drawCorr(); });
+</script>
+</body>
+</html>
