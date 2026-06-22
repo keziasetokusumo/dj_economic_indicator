@@ -1,14 +1,13 @@
-# The Drop — DJs vs. the U.S. Economy
+# A time series exploring the state of DJ-ing and the broader U.S. economy
 
-**Does the rise and fall of DJ culture move with the economy, or to its own beat?**
+There's been a noticeable rise in the number of self-proclaimed disc jockeys (DJs),
+seemingly from the rapid growth of gig workers and the slowing rate of expansion of
+the traditional economy. I'm interested in what the numbers are indicating.
 
-An interactive explorer that lines up the electronic-music scene against U.S. economic
-indicators from 2007–2025. Toggle data "channels" on a mixer-style console, index
+This is an interactive explorer that lines up the electronic-music scene against some
+U.S. economic indicators from ~2007–2025. Toggle data "channels" on a mixer-style console, index
 everything to a common base year so different units share one axis, see recessions
 shaded in, and switch to a correlation view to test the relationship directly.
-
-It's a single self-contained `index.html` — open it in a browser or drop it on GitHub
-Pages, no build step or server needed.
 
 ---
 
@@ -55,13 +54,11 @@ hint rather than proof.
 | Working DJ pay | Median DJ wage, annualized | BLS OEWS 27-2091 |
 | Per-gig economics | Gross fee vs. take-home, illustrative | Booking-rate guides (Bark, The Bash, Thumbtack) + venue/PA rental prices |
 
-All values are in `data.csv`. The BLS DJ pages are per-year at
-`bls.gov/oes/<year>/may/oes272091.htm`; FRED series download as CSV from `fred.stlouisfed.org`.
 
-## Honest caveats
+## Data limitations
 
 - **DJs are mostly self-employed**, so the formal BLS wage count (~5–6k) badly undercounts
-  the real workforce (~15k in 2024). The viz shows both.
+  the real workforce (~15k in 2024). The visualization shows both.
 - **Industry revenue is an annual estimate** and is sometimes restated between report
   editions; a few years are left as gaps rather than guessed.
 - **Real GDP values are approximate** — refresh from FRED for exact current-vintage figures.
@@ -75,14 +72,6 @@ All values are in `data.csv`. The BLS DJ pages are per-year at
   draw; the self-promoted loss is a common-but-not-universal outcome.
 - **Correlation ≠ causation**, and ~7 shared years is a small sample. The correlation view
   is a conversation starter, not an econometric claim.
-
-## Extending it
-
-The most natural addition is a **DJ search-interest line from Google Trends** (a long, free
-proxy for the hobby side, 2004–present). Export "DJ" interest-over-time as CSV from
-`trends.google.com`, then add it as a new entry in the `SERIES` object near the top of the
-`index.html` script — give it `group:"culture"` and it'll appear as a new channel
-automatically.
 
 ## Run / host
 
