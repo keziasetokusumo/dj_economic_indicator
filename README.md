@@ -19,6 +19,15 @@ Pages, no build step or server needed.
   read on one scale. Recessions (2008–09 and 2020) are shaded.
 - **Correlation view** — a scatter of a DJ metric against an economic one, with a fitted
   line and the Pearson correlation, plus a plain-language reading of what it means.
+- **Barriers to entry** — the cost of a starter DJ setup over time, on a log scale, from
+  the vinyl era to phone-and-streaming. Shows how digital technology collapsed the cost of
+  getting behind the decks.
+- **Two tiers** — the pay gap between the world's #1 DJ (Forbes Electronic Cash Kings) and a
+  typical working DJ (BLS median), on a log scale. Hover any year for the multiple between
+  them.
+- **The local gig** — the unit economics of a single show: gross fee vs. actual take-home
+  across a cafe set, a bar/club night, and a self-promoted event. Shows how venue, PA, and
+  promo costs squeeze per-show profit — and can turn a packed self-promoted night into a loss.
 - **Context cards** — the BLS DJ-employment numbers, including why the official count
   misses most of the profession.
 
@@ -41,6 +50,10 @@ hint rather than proof.
 | Unemployment rate | Annual average, % | BLS / FRED `UNRATE` |
 | Real GDP | Chained 2017 $, annual | FRED `GDPC1` |
 | Recession dates | Shaded bands | NBER |
+| DJ setup cost | Representative entry-level rig, illustrative | Retail prices (vinyl, CDJ, controllers, apps) |
+| Top DJ earnings | Highest-paid DJ, $M, 2012–2019 | Forbes Electronic Cash Kings |
+| Working DJ pay | Median DJ wage, annualized | BLS OEWS 27-2091 |
+| Per-gig economics | Gross fee vs. take-home, illustrative | Booking-rate guides (Bark, The Bash, Thumbtack) + venue/PA rental prices |
 
 All values are in `data.csv`. The BLS DJ pages are per-year at
 `bls.gov/oes/<year>/may/oes272091.htm`; FRED series download as CSV from `fred.stlouisfed.org`.
@@ -52,6 +65,14 @@ All values are in `data.csv`. The BLS DJ pages are per-year at
 - **Industry revenue is an annual estimate** and is sometimes restated between report
   editions; a few years are left as gaps rather than guessed.
 - **Real GDP values are approximate** — refresh from FRED for exact current-vintage figures.
+- **Setup costs are illustrative** — representative retail prices at each era, not a
+  continuous price index, and they assume you already own a laptop/phone for the digital eras.
+- **The pay gap mixes sources** — top-tier earnings (Forbes) and the working-tier median
+  (BLS) are measured differently, and the Forbes list stopped after 2019. The working-DJ
+  median is a small, noisy survey shown roughly flat.
+- **Per-gig economics are illustrative** — representative gross fees and venue/PA/promo costs
+  from booking guides, not measured accounts. Real numbers swing widely by city, night, and
+  draw; the self-promoted loss is a common-but-not-universal outcome.
 - **Correlation ≠ causation**, and ~7 shared years is a small sample. The correlation view
   is a conversation starter, not an econometric claim.
 

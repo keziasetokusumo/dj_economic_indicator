@@ -30,7 +30,7 @@
   .thesis{font-size:clamp(15px,2.2vw,18px);color:#cfc9e0;max-width:62ch;line-height:1.5;margin:.2em 0 0}
   .vintage{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:10px}
 
-  .modebar{display:flex;gap:6px;margin:24px 0 14px}
+  .modebar{display:flex;flex-wrap:wrap;gap:6px;margin:24px 0 14px}
   .mode{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
         background:var(--panel);border:1px solid var(--line);padding:9px 16px;border-radius:999px;cursor:pointer;transition:.15s}
   .mode:hover{color:var(--ink);border-color:var(--faint)}
@@ -112,6 +112,9 @@
   <div class="modebar" role="tablist">
     <button class="mode" id="mode-time" aria-pressed="true">Timeline</button>
     <button class="mode" id="mode-corr" aria-pressed="false">Correlation</button>
+    <button class="mode" id="mode-barriers" aria-pressed="false">Barriers to entry</button>
+    <button class="mode" id="mode-tiers" aria-pressed="false">Two tiers</button>
+    <button class="mode" id="mode-gigs" aria-pressed="false">The local gig</button>
   </div>
 
   <!-- TIMELINE VIEW -->
@@ -158,6 +161,24 @@
     <div class="readout" id="corr-readout"></div>
   </section>
 
+  <!-- BARRIERS VIEW -->
+  <section id="view-barriers" class="hidden">
+    <div class="stage"><svg id="barriers" viewBox="0 0 920 470" role="img" aria-label="DJ starter-setup cost over time"></svg></div>
+    <div class="readout">From a record bag to a phone: a starter DJ setup fell from roughly <b>$2,000</b> in the turntable era to about <b>$15</b> today. Software went free, controllers got cheap, and a streaming subscription replaced the crates. <span style="color:var(--muted)">Representative entry-level hardware + software costs assembled from retail prices — illustrative of the trend, not an official index. Music isn&rsquo;t included; it went from ~$15 a record to a ~$10/mo subscription. Log scale.</span></div>
+  </section>
+
+  <!-- TIERS VIEW -->
+  <section id="view-tiers" class="hidden">
+    <div class="stage"><svg id="tiers" viewBox="0 0 920 470" role="img" aria-label="Top DJ vs working DJ pay"></svg></div>
+    <div class="readout" id="tiers-readout"></div>
+  </section>
+
+  <!-- LOCAL GIG VIEW -->
+  <section id="view-gigs" class="hidden">
+    <div class="stage"><svg id="gigs" viewBox="0 0 920 470" role="img" aria-label="Per-gig economics"></svg></div>
+    <div class="readout" id="gigs-readout"></div>
+  </section>
+
   <footer>
     <div class="src">Sources &mdash; Electronic music revenue: IMS Electronic Music Business Report (MIDiA Research). DJ employment: U.S. BLS Occupational Employment &amp; Wage Statistics (27-2091) and Occupational Outlook Handbook. Unemployment &amp; real GDP: U.S. BLS / FRED (UNRATE, GDPC1). Recession dates: NBER.</div>
     <div style="margin-top:8px">Caveats &mdash; The DJ workforce is mostly self-employed, so formal counts undercount it. Industry-revenue figures are annual estimates and are occasionally restated between report editions; some years are gaps, not zeros. Real GDP values are approximate &mdash; refresh from FRED for exact vintages. Correlation over ~7 shared years is suggestive, not proof.</div>
@@ -178,6 +199,28 @@ const SERIES = {
 };
 const ORDER = ["emusic","unemp","gdp"];
 const RECESSIONS = [ {x0:2007.92,x1:2009.5,lab:"2008–09"}, {x0:2020.08,x1:2020.33,lab:"2020"} ];
+
+// Representative entry-level DJ setup cost (illustrative; from retail prices)
+const BARRIERS = [
+  {year:1995, cost:1800, era:"Vinyl"},
+  {year:2001, cost:2400, era:"CDJ"},
+  {year:2005, cost:1400, era:"DVS"},
+  {year:2010, cost:300,  era:"Controller"},
+  {year:2015, cost:150,  era:"Budget ctrl"},
+  {year:2020, cost:40,   era:"Phone+stream"},
+  {year:2024, cost:15,   era:"Free apps"}
+];
+// Top tier: Forbes Electronic Cash Kings #1 ($M). Working tier: BLS median DJ, annualized ($)
+const TIERS = {
+  top:  {2012:22, 2013:46, 2014:66, 2015:66, 2016:63, 2017:48.5, 2019:46},
+  work: {2012:38000, 2016:39000, 2019:42000, 2022:44000, 2024:43000}
+};
+// Per-gig unit economics (illustrative; from typical booking & venue-rental rates)
+const GIGS = [
+  {name:"Cafe set", gross:150, net:105, costNote:"transport + subscriptions"},
+  {name:"Bar / club night", gross:300, net:250, costNote:"venue supplies PA"},
+  {name:"Self-promoted night", gross:840, net:-360, costNote:"venue $800 + PA $250 + promo $150"}
+];
 const COLOR = {culture:getCSS("--culture"), economy:getCSS("--economy")};
 function getCSS(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
 
@@ -346,22 +389,131 @@ function buildBaseYears(){
   sel.addEventListener("change",()=>{state.base=+sel.value;drawTimeline();});
 }
 
-//===================== mode switching =====================
-const vTime=document.getElementById("view-time"), vCorr=document.getElementById("view-corr");
-const bTime=document.getElementById("mode-time"), bCorr=document.getElementById("mode-corr");
-bTime.onclick=()=>{setMode("time")}; bCorr.onclick=()=>{setMode("corr")};
-function setMode(m){
-  const t=m==="time";
-  bTime.setAttribute("aria-pressed",t); bCorr.setAttribute("aria-pressed",!t);
-  vTime.classList.toggle("hidden",!t); vCorr.classList.toggle("hidden",t);
-  if(t) drawTimeline(); else drawCorr();
+//===================== BARRIERS TO ENTRY =====================
+const barriersSvg=document.getElementById("barriers");
+function drawBarriers(){
+  barriersSvg.innerHTML="";
+  const D=BARRIERS, xs=D.map(d=>d.year);
+  const bx0=Math.min(...xs), bx1=Math.max(...xs);
+  const px=y=>M.l+(y-bx0)/((bx1-bx0))*PW;
+  const lo=Math.log10(10), hi=Math.log10(3000);
+  const py=v=>M.t+(1-(Math.log10(v)-lo)/(hi-lo))*PH;
+  [10,30,100,300,1000,3000].forEach(t=>{
+    barriersSvg.appendChild(el("line",{class:"gridline",x1:M.l,x2:M.l+PW,y1:py(t),y2:py(t)}));
+    barriersSvg.append(text(M.l-8,py(t)+3,"$"+t.toLocaleString(),"axislab","end"));
+  });
+  D.forEach(d=>barriersSvg.append(text(px(d.year),M.t+PH+22,String(d.year),"axislab","middle")));
+  barriersSvg.append(text(M.l,M.t-9,"Entry setup cost — log scale","axislab","start"));
+  const pts=D.map(d=>[px(d.year),py(d.cost)]);
+  const area="M"+pts[0][0].toFixed(1)+" "+(M.t+PH)+" "+pts.map(p=>"L"+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ")+" L"+pts[pts.length-1][0].toFixed(1)+" "+(M.t+PH)+" Z";
+  barriersSvg.appendChild(el("path",{d:area,fill:COLOR.culture,opacity:.10}));
+  barriersSvg.appendChild(el("path",{d:"M"+pts.map((p,i)=>(i?"L":"")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" "),fill:"none",stroke:COLOR.culture,"stroke-width":2.4,"stroke-linejoin":"round"}));
+  D.forEach((dp,i)=>{
+    const x=px(dp.year), y=py(dp.cost);
+    barriersSvg.appendChild(el("circle",{cx:x,cy:y,r:4.2,fill:COLOR.culture}));
+    let ly=(i%2===0)?y-13:y+21; ly=Math.max(M.t+12,Math.min(M.t+PH-4,ly));
+    barriersSvg.append(text(x,ly,dp.era+" · $"+dp.cost.toLocaleString(),"serieslab","middle",COLOR.culture));
+  });
 }
+
+//===================== TWO TIERS =====================
+const tiersSvg=document.getElementById("tiers");
+function fmtMoney(v){return v>=1e6?"$"+(v/1e6)+"M":v>=1e3?"$"+(v/1e3)+"k":"$"+v;}
+function drawTiers(){
+  tiersSvg.innerHTML="";
+  const top=TIERS.top, work=TIERS.work, tx0=2012, tx1=2024;
+  const px=y=>M.l+(y-tx0)/((tx1-tx0))*PW;
+  const lo=Math.log10(2e4), hi=Math.log10(1e8);
+  const py=v=>M.t+(1-(Math.log10(v)-lo)/(hi-lo))*PH;
+  [1e4,1e5,1e6,1e7,1e8].forEach(t=>{
+    tiersSvg.appendChild(el("line",{class:"gridline",x1:M.l,x2:M.l+PW,y1:py(t),y2:py(t)}));
+    tiersSvg.append(text(M.l-8,py(t)+3,fmtMoney(t),"axislab","end"));
+  });
+  for(let y=tx0;y<=tx1;y+=2) tiersSvg.append(text(px(y),M.t+PH+22,"’"+String(y).slice(2),"axislab","middle"));
+  function plot(obj,scaleV,color,label){
+    const yy=Object.keys(obj).map(Number).sort((a,b)=>a-b);
+    tiersSvg.appendChild(el("path",{d:"M"+yy.map((y,i)=>(i?"L":"")+px(y).toFixed(1)+" "+py(scaleV(obj[y])).toFixed(1)).join(" "),fill:"none",stroke:color,"stroke-width":2.4,"stroke-linejoin":"round"}));
+    yy.forEach(y=>tiersSvg.appendChild(el("circle",{cx:px(y),cy:py(scaleV(obj[y])),r:3.8,fill:color})));
+    const ly=yy[yy.length-1];
+    tiersSvg.append(text(px(ly)+7,py(scaleV(obj[ly]))+3,label,"serieslab","start",color));
+  }
+  plot(work, v=>v, COLOR.economy, "Working DJ");
+  plot(top, v=>v*1e6, COLOR.culture, "Top DJ");
+  document.getElementById("tiers-readout").innerHTML =
+    `Same job, two economies. At the EDM peak the world&rsquo;s #1 DJ pulled in <b>$66M</b> a year while a typical working DJ earned about <b>$40k</b> — a gap of roughly <span class="rval">1,600&times;</span>. Forbes&rsquo; list (2012&ndash;2019, since discontinued) never once included a woman. <span style="color:var(--muted)">Top tier: Forbes Electronic Cash Kings (#1 earner). Working tier: BLS median for &ldquo;Disc Jockeys, Except Radio,&rdquo; annualized — a noisy small survey, shown roughly flat. Log scale.</span>`;
+  const hit=el("rect",{x:M.l,y:M.t,width:PW,height:PH,fill:"transparent"}); tiersSvg.appendChild(hit);
+  hit.addEventListener("mousemove",e=>{
+    const r=tiersSvg.getBoundingClientRect(),scale=VW/r.width;
+    let yr=Math.round(tx0+((e.clientX-r.left)*scale-M.l)/PW*(tx1-tx0)); yr=Math.max(tx0,Math.min(tx1,yr));
+    let rows="";
+    if(top[yr]!=null) rows+=`<div class="row"><i style="color:${COLOR.culture}">Top DJ</i><span>$${top[yr]}M</span></div>`;
+    if(work[yr]!=null) rows+=`<div class="row"><i style="color:${COLOR.economy}">Working DJ</i><span>${fmtMoney(work[yr])}</span></div>`;
+    if(top[yr]!=null&&work[yr]!=null) rows+=`<div class="row" style="color:var(--muted)"><i>multiple</i><span>${Math.round(top[yr]*1e6/work[yr]).toLocaleString()}&times;</span></div>`;
+    showTip(e,`<div class="ty">${yr}</div>${rows||'<div class="row" style="color:var(--muted)">no data</div>'}`);
+  });
+  hit.addEventListener("mouseleave",hideTip);
+}
+
+//===================== THE LOCAL GIG =====================
+const gigsSvg=document.getElementById("gigs");
+function drawGigs(){
+  gigsSvg.innerHTML="";
+  const G=GIGS, n=G.length, yMin=-450, yMax=950;
+  const py=v=>M.t+(1-(v-yMin)/(yMax-yMin))*PH;
+  [-400,-200,0,200,400,600,800].forEach(t=>{
+    gigsSvg.appendChild(el("line",{class:t===0?"baseline":"gridline",x1:M.l,x2:M.l+PW,y1:py(t),y2:py(t)}));
+    gigsSvg.append(text(M.l-8,py(t)+3,(t<0?"−$":"$")+Math.abs(t),"axislab","end"));
+  });
+  gigsSvg.append(text(M.l,M.t-9,"Per gig — gross fee vs. take-home (illustrative)","axislab","start"));
+  // legend
+  gigsSvg.appendChild(el("rect",{x:M.l+PW-176,y:M.t-16,width:11,height:11,fill:COLOR.culture,opacity:.28,rx:2}));
+  gigsSvg.append(text(M.l+PW-160,M.t-7,"gross","axislab","start"));
+  gigsSvg.appendChild(el("rect",{x:M.l+PW-112,y:M.t-16,width:11,height:11,fill:COLOR.economy,rx:2}));
+  gigsSvg.append(text(M.l+PW-96,M.t-7,"take-home","axislab","start"));
+  const gw=PW/n, rec=getCSS("--recession");
+  G.forEach((g,i)=>{
+    const cx=M.l+gw*i+gw/2, bw=Math.min(48,gw*0.24);
+    const gx=cx-bw-7, nx=cx+7;
+    // gross
+    gigsSvg.appendChild(el("rect",{x:gx,y:py(g.gross),width:bw,height:py(0)-py(g.gross),fill:COLOR.culture,opacity:.28,rx:3}));
+    gigsSvg.append(text(gx+bw/2,py(g.gross)-6,"$"+g.gross,"axislab","middle"));
+    // net
+    const pos=g.net>=0, col=pos?COLOR.economy:rec;
+    const ny=pos?py(g.net):py(0), nh=Math.abs(py(g.net)-py(0));
+    gigsSvg.appendChild(el("rect",{x:nx,y:ny,width:bw,height:nh,fill:col,rx:3}));
+    gigsSvg.append(text(nx+bw/2,pos?py(g.net)-6:py(g.net)+15,(g.net<0?"−$":"$")+Math.abs(g.net),"serieslab","middle",col));
+    // labels
+    gigsSvg.append(text(cx,M.t+PH+22,g.name,"serieslab","middle"));
+    gigsSvg.append(text(cx,M.t+PH+36,g.costNote,"axislab","middle"));
+  });
+  document.getElementById("gigs-readout").innerHTML =
+    `A $150 cafe set nets about <b>$105</b> after transport and subscriptions — safe, but small. A bar or club night clears more (~<b>$250</b>), yet those slots are scarcer. The moment a DJ rents their own room, <b>venue, PA and promo costs</b> can turn a packed night into a <b>loss</b>. So as the scene tilts toward smaller venues, gross can rise on volume while take-home per show stays thin: netting <b>$3,000</b> a month on cafe sets means roughly <span class="rval">28 gigs</span> — nearly one a day. <span style="color:var(--muted)">Illustrative unit economics from typical 2024–26 booking rates and venue/PA rental prices; ranges vary widely by city and night.</span>`;
+}
+
+//===================== mode switching =====================
+const MODES={
+  time:{btn:"mode-time",view:"view-time",draw:drawTimeline},
+  corr:{btn:"mode-corr",view:"view-corr",draw:drawCorr},
+  barriers:{btn:"mode-barriers",view:"view-barriers",draw:drawBarriers},
+  tiers:{btn:"mode-tiers",view:"view-tiers",draw:drawTiers},
+  gigs:{btn:"mode-gigs",view:"view-gigs",draw:drawGigs}
+};
+let CURMODE="time";
+function setMode(m){
+  CURMODE=m;
+  for(const k in MODES){
+    document.getElementById(MODES[k].btn).setAttribute("aria-pressed",k===m);
+    document.getElementById(MODES[k].view).classList.toggle("hidden",k!==m);
+  }
+  MODES[m].draw();
+}
+Object.keys(MODES).forEach(k=>document.getElementById(MODES[k].btn).onclick=()=>setMode(k));
 document.getElementById("xpick").addEventListener("change",drawCorr);
 document.getElementById("ypick").addEventListener("change",drawCorr);
 
 //===================== init =====================
-buildConsole(); buildBaseYears(); drawTimeline();
-addEventListener("resize",()=>{ if(!vTime.classList.contains("hidden")) drawTimeline(); else drawCorr(); });
+buildConsole(); buildBaseYears(); setMode("time");
+addEventListener("resize",()=>MODES[CURMODE].draw());
 </script>
 </body>
 </html>

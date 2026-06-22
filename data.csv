@@ -47,3 +47,25 @@ year,series,value,unit,group,source
 2021,dj_employment_formal,4.77,thousands,culture,BLS OEWS 27-2091
 2022,dj_employment_formal,5.64,thousands,culture,BLS OEWS 27-2091
 2024,dj_employment_total,15.4,thousands,culture,BLS OOH (incl. self-employed)
+1995,dj_setup_cost,1800,USD,barriers,illustrative retail prices (vinyl rig)
+2001,dj_setup_cost,2400,USD,barriers,illustrative retail prices (CDJ)
+2005,dj_setup_cost,1400,USD,barriers,illustrative retail prices (DVS software)
+2010,dj_setup_cost,300,USD,barriers,illustrative retail prices (controller)
+2015,dj_setup_cost,150,USD,barriers,illustrative retail prices (budget controller)
+2020,dj_setup_cost,40,USD,barriers,illustrative retail prices (phone+streaming)
+2024,dj_setup_cost,15,USD,barriers,illustrative retail prices (free apps)
+2012,top_dj_earnings,22,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2013,top_dj_earnings,46,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2014,top_dj_earnings,66,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2015,top_dj_earnings,66,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2016,top_dj_earnings,63,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2017,top_dj_earnings,48.5,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2019,top_dj_earnings,46,USD_millions,tiers,Forbes Electronic Cash Kings #1
+2012,working_dj_pay,38000,USD_annual,tiers,BLS median 27-2091 annualized (approx)
+2016,working_dj_pay,39000,USD_annual,tiers,BLS median 27-2091 annualized (approx)
+2019,working_dj_pay,42000,USD_annual,tiers,BLS median 27-2091 annualized (approx)
+2022,working_dj_pay,44000,USD_annual,tiers,BLS median 27-2091 annualized (approx)
+2024,working_dj_pay,43000,USD_annual,tiers,BLS median 27-2091 annualized (approx)
+NA,gig_cafe,gross_150_net_105,USD,local_gig,illustrative (booking rates; venue supplies space)
+NA,gig_bar_club,gross_300_net_250,USD,local_gig,illustrative (booking rates; venue supplies PA)
+NA,gig_self_promoted,gross_840_net_-360,USD,local_gig,illustrative (venue 800 + PA 250 + promo 150)
