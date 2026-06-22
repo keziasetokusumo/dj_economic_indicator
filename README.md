@@ -4,7 +4,7 @@ There's been a noticeable rise in the number of self-proclaimed disc jockeys (DJ
 seemingly from the rapid growth of gig workers and the slowing rate of expansion of
 the traditional economy. I'm interested in what the numbers are indicating.
 
-This is an interactive explorer that lines up the electronic-music scene against some
+[This](https://keziasetokusumo.github.io/dj_economic_indicator/) is an interactive explorer that lines up the electronic-music scene against some
 U.S. economic indicators from ~2007–2025. Toggle data "channels" on a mixer-style console, index
 everything to a common base year so different units share one axis, see recessions
 shaded in, and switch to a correlation view to test the relationship directly.
@@ -72,9 +72,3 @@ hint rather than proof.
   draw; the self-promoted loss is a common-but-not-universal outcome.
 - **Correlation ≠ causation**, and ~7 shared years is a small sample. The correlation view
   is a conversation starter, not an econometric claim.
-
-## Run / host
-
-Just open `index.html` in any browser. To publish: push to a repo, enable GitHub Pages,
-and it's live. The fonts load from Google Fonts when online and fall back to system fonts
-offline.
