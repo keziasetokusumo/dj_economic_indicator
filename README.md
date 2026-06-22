@@ -7,7 +7,7 @@ the traditional economy. I'm interested in what the numbers are indicating.
 [This](https://keziasetokusumo.github.io/dj_economic_indicator/) is an interactive explorer that lines up the electronic-music scene against several U.S. economic indicators from ~2007–2025. 
 
 
-![Uploading Screenshot 2026-06-22 at 11.26.47 AM.png…]()
+<img width="705" height="719" alt="Screenshot 2026-06-22 at 11 26 47 AM" src="https://github.com/user-attachments/assets/3bd4ceae-b11e-4be5-87b8-761d60ad85f4" />
 
 
 Toggle data "channels" on a mixer-style console, index
