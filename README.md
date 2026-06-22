@@ -4,8 +4,13 @@ There's been a noticeable rise in the number of self-proclaimed disc jockeys (DJ
 seemingly from the rapid growth of gig workers and the slowing rate of expansion of
 the traditional economy. I'm interested in what the numbers are indicating.
 
-[This](https://keziasetokusumo.github.io/dj_economic_indicator/) is an interactive explorer that lines up the electronic-music scene against some
-U.S. economic indicators from ~2007–2025. Toggle data "channels" on a mixer-style console, index
+[This](https://keziasetokusumo.github.io/dj_economic_indicator/) is an interactive explorer that lines up the electronic-music scene against several U.S. economic indicators from ~2007–2025. 
+
+
+![Uploading Screenshot 2026-06-22 at 11.26.47 AM.png…]()
+
+
+Toggle data "channels" on a mixer-style console, index
 everything to a common base year so different units share one axis, see recessions
 shaded in, and switch to a correlation view to test the relationship directly.
 
